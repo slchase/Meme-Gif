@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return data.data.map(gif => gif.images.original.url);
         } catch (error) {
             console.error('Error fetching GIFs:', error);
-            alert('Failed to fetch GIFs. Please try again later.');
+            alert('Failed to fetch GIFs. Please try again later.');            git init
             return [];
         }
     }
