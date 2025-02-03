@@ -3,25 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meme GIF Generator</title>
+    <title>Trump Meme Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;600&display=swap" rel="stylesheet">
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Lexend Deca', sans-serif;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        #main-container {
             display: flex;
             flex-direction: column;
             align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
         }
-        #gif-gallery {
+        
+        h1 {
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        #meme-gallery {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 15px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 800px;
         }
-        .gif-option {
+        
+        .meme-option {
             cursor: pointer;
-            max-width: 200px;
+            width: 200px;
+            height: auto;
+            transition: transform 0.2s;
         }
+        
+        .meme-option:hover {
+            transform: scale(1.05);
+        }
+        
+        .selected-meme {
+            border: 3px solid orange;
+        }
+        
+        #selected-meme-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 40px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        #selected-meme-wrapper {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        #selected-meme-display {
+            width: 250px;
+            transform: scale(1.25);
+            margin: 20px 0;
+        }
+        
         button {
             margin: 10px;
             padding: 15px 25px;
@@ -31,18 +90,46 @@
             color: white;
             border: none;
             border-radius: 5px;
+            font-family: 'Lexend Deca', sans-serif;
         }
+        
         button:hover {
             background-color: darkorange;
+        }
+        
+        .selection-text {
+            font-size: 20px;
+            margin: 20px 0;
+            color: #333;
+            display: none;
+        }
+        
+        h2 {
+            margin-bottom: 20px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        #download-meme {
+            margin: 20px auto;
+            display: block;
         }
     </style>
 </head>
 <body>
-    <h1>Meme GIF Generator</h1>
-    <button id="get-gifs">Get GIFs</button>
-    <h2>Pick a Meme</h2>
-    <div id="gif-gallery"></div>
-    <button id="download-gif" style="display:none;">Download GIF</button>
+    <div id="main-container">
+        <h1>Trump Meme Generator</h1>
+        <button id="get-memes">Get Memes</button>
+        <p id="selection-text" class="selection-text">Select A Meme</p>
+        <div id="meme-gallery"></div>
+        <div id="selected-meme-container" style="display:none;">
+            <h2>Selected Meme</h2>
+            <div id="selected-meme-wrapper">
+                <img id="selected-meme-display" src="" alt="Selected meme">
+            </div>
+            <button id="download-meme">Download Meme</button>
+        </div>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
