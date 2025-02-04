@@ -176,7 +176,70 @@
             margin: 0 0 20px 0;
             color: #333;
         }
-        /* Mobile and Share Button Styles */
+
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .share-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            background-color: #1DA1F2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .share-button:hover {
+            background-color: #1991da;
+        }
+
+        .copy-button {
+            background-color: #4CAF50;
+        }
+
+        .copy-button:hover {
+            background-color: #45a049;
+        }
+
+        .copy-success {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #1DA1F2;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
         @media screen and (max-width: 768px) {
             #main-container {
                 padding: 10px;
@@ -209,41 +272,6 @@
                 margin-top: 15px;
             }
         }
-
-        .share-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .share-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            background-color: #1DA1F2;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 8px 16px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.2s;
-        }
-
-        .share-button:hover {
-            background-color: #1991da;
-        }
-
-        .meme-controls {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            width: 100%;
-            max-width: 400px;
-            margin: 10px 0;
-        }
     </style>
 </head>
 <body>
@@ -268,11 +296,6 @@
             <div class="text-controls">
                 <input type="text" id="meme-text" placeholder="Add text to meme (25 chars max)" maxlength="25">
                 <div class="error-message" id="text-error">Text cannot exceed 25 characters</div>
-                <div class="meme-controls">
-                    <div class="share-buttons" style="display: none;">
-                        <button id="share-twitter" class="share-button">Share on X/Twitter</button>
-                    </div>
-                </div>
                 
                 <div class="control-row">
                     <select id="font-size">
@@ -300,15 +323,16 @@
                 </div>
                 <img id="preview-display" src="" alt="Meme preview">
                 <div class="share-buttons">
-                    <button id="download-meme">Download Meme</button>
-                    <button id="share-twitter" class="share-button">
-                        Share on X
-                    </button>
+                    <button id="download-meme">Download To Share</button>
                 </div>
             </div>
             <canvas id="meme-canvas" style="display: none;"></canvas>
         </div>
+        <div class="footer">
+            Built by <a href="https://twitter.com/slchase" target="_blank">@slchase</a>
+        </div>
     </div>
+    <div id="copy-success" class="copy-success">Link copied to clipboard!</div>
     <script src="script.js"></script>
 </body>
 </html>

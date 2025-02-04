@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const startOver2Button = document.getElementById('start-over-2');
     const memeTextInput = document.getElementById('meme-text');
     const textError = document.getElementById('text-error');
+    const copyLinkButton = document.getElementById('copy-link');
+    const copySuccess = document.getElementById('copy-success');
     let selectedMemeUrl = '';
     let previewMemeBlob = null;
 
@@ -105,8 +107,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
         const gif = new GIF({
             workers: 2,
-            quality: 10,
-            workerScript: 'gif.worker.js'
+            quality: 5,          // Balanced quality setting
+            workerScript: 'gif.worker.js',
+            dither: false,       // Disabled for smaller file size
+            width: 320,          // Fixed width
+            height: 240,         // Fixed height
         });
 
         try {
@@ -122,12 +127,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 gifImg.load(() => {
                     try {
                         const numFrames = gifImg.get_length();
-                        canvas.width = gifImg.get_canvas().width;
-                        canvas.height = gifImg.get_canvas().height;
+                        canvas.width = 320;  // Fixed width
+                        canvas.height = 240; // Fixed height
 
                         for (let i = 0; i < numFrames; i++) {
                             gifImg.move_to(i);
-                            ctx.drawImage(gifImg.get_canvas(), 0, 0);
+                            ctx.drawImage(gifImg.get_canvas(), 0, 0, canvas.width, canvas.height);
                             
                             if (text) {
                                 ctx.fillStyle = 'white';
@@ -143,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                             gif.addFrame(canvas, { 
                                 copy: true, 
-                                delay: 100 
+                                delay: 120     // Slightly increased delay
                             });
                         }
 
@@ -222,17 +227,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Share functionality
-    function shareOnTwitter() {
+    function copyLink() {
         if (!previewMemeBlob) {
             alert('Please preview your meme first!');
             return;
         }
 
-        const text = encodeURIComponent('Check out this Trump meme I made! 😂');
-        const url = encodeURIComponent(window.location.href);
-        const shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
-        window.open(shareUrl, '_blank');
+        // Create a temporary URL for the gif blob
+        const gifUrl = URL.createObjectURL(previewMemeBlob);
+        
+        // Copy the URL to clipboard
+        navigator.clipboard.writeText(gifUrl).then(() => {
+            copySuccess.style.display = 'block';
+            setTimeout(() => {
+                copySuccess.style.display = 'none';
+                // Clean up the temporary URL
+                URL.revokeObjectURL(gifUrl);
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy link:', err);
+            alert('Failed to copy link. Please try again.');
+            URL.revokeObjectURL(gifUrl);
+        });
     }
 
     // Event Listeners
@@ -246,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     previewButton.addEventListener('click', previewMeme);
     downloadButton.addEventListener('click', downloadMeme);
-    document.getElementById('share-twitter').addEventListener('click', shareOnTwitter);
+    copyLinkButton.addEventListener('click', copyLink);
 
     // Input validation
     memeTextInput.addEventListener('input', (e) => {
