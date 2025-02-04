@@ -107,11 +107,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
         const gif = new GIF({
             workers: 2,
-            quality: 5,          // Balanced quality setting
+            quality: 5,
             workerScript: 'gif.worker.js',
-            dither: false,       // Disabled for smaller file size
-            width: 320,          // Fixed width
-            height: 240,         // Fixed height
+            dither: false,
+            width: 320,
+            height: 240,
         });
 
         try {
@@ -127,13 +127,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 gifImg.load(() => {
                     try {
                         const numFrames = gifImg.get_length();
-                        canvas.width = 320;  // Fixed width
-                        canvas.height = 240; // Fixed height
+                        canvas.width = 320;
+                        canvas.height = 240;
 
                         for (let i = 0; i < numFrames; i++) {
                             gifImg.move_to(i);
                             ctx.drawImage(gifImg.get_canvas(), 0, 0, canvas.width, canvas.height);
                             
+                            // Add user text if provided
                             if (text) {
                                 ctx.fillStyle = 'white';
                                 ctx.strokeStyle = 'black';
@@ -146,9 +147,23 @@ document.addEventListener('DOMContentLoaded', () => {
                                 ctx.fillText(text, x, y);
                             }
 
+                            // Add watermark (mandatory)
+                            ctx.font = '16px "Lexend Deca"';
+                            ctx.fillStyle = 'black';
+                            ctx.textAlign = 'left';
+                            ctx.lineWidth = 2;
+                            ctx.strokeStyle = 'white';
+                            const watermark = 'Trumped.co';
+                            const padding = 10;
+                            const watermarkY = canvas.height - padding;
+                            
+                            // Add white stroke behind black text for visibility
+                            ctx.strokeText(watermark, padding, watermarkY);
+                            ctx.fillText(watermark, padding, watermarkY);
+
                             gif.addFrame(canvas, { 
                                 copy: true, 
-                                delay: 120     // Slightly increased delay
+                                delay: 80  // Reduced from 120 for faster animation
                             });
                         }
 
@@ -174,12 +189,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         const text = memeTextInput.value.trim();
-        if (!text) {
-            alert('Please add some text to preview!');
-            return;
-        }
-
-        if (text.length > 25) {
+        // Now allowing empty text, but still checking length if text is provided
+        if (text && text.length > 25) {
             textError.style.display = 'block';
             return;
         }
@@ -233,15 +244,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Create a temporary URL for the gif blob
         const gifUrl = URL.createObjectURL(previewMemeBlob);
         
-        // Copy the URL to clipboard
         navigator.clipboard.writeText(gifUrl).then(() => {
             copySuccess.style.display = 'block';
             setTimeout(() => {
                 copySuccess.style.display = 'none';
-                // Clean up the temporary URL
                 URL.revokeObjectURL(gifUrl);
             }, 2000);
         }).catch(err => {
@@ -262,7 +270,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     previewButton.addEventListener('click', previewMeme);
     downloadButton.addEventListener('click', downloadMeme);
-    copyLinkButton.addEventListener('click', copyLink);
+    if (copyLinkButton) {
+        copyLinkButton.addEventListener('click', copyLink);
+    }
 
     // Input validation
     memeTextInput.addEventListener('input', (e) => {
