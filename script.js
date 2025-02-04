@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchTrumpMemes() {
         const apiKey = 'VNlj7YBvdmY8SoGZKt6OBex2XDUUDkJk';
-        const maxOffset = 100; // Maximum offset for variety
+        const maxOffset = 100;
         const randomOffset = Math.floor(Math.random() * maxOffset);
         
         try {
@@ -77,7 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedMemeContainer.style.display = 'flex';
         previewContainer.style.display = 'none';
         
-        // Hide other memes and initial button
         memeGallery.innerHTML = '';
         selectionText.style.display = 'none';
         getMemesButton.style.display = 'none';
@@ -94,10 +93,11 @@ document.addEventListener('DOMContentLoaded', () => {
             left: canvas.width / 4,
             right: (canvas.width / 4) * 3,
             top: canvas.width / 2,
-            middle: canvas.width / 2
+            middle: canvas.width / 2,
+            bottom: canvas.width / 2
         };
 
-        return { x: textX[position], y: textY[position] || textY.top };
+        return { x: textX[position], y: textY[position] };
     }
 
     async function createMemeWithText(gifUrl, text, fontSize, position) {
@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (text.length > 12) {
+        if (text.length > 25) {
             textError.style.display = 'block';
             return;
         }
@@ -222,6 +222,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Share functionality
+    function shareOnTwitter() {
+        if (!previewMemeBlob) {
+            alert('Please preview your meme first!');
+            return;
+        }
+
+        const text = encodeURIComponent('Check out this Trump meme I made! 😂');
+        const url = encodeURIComponent(window.location.href);
+        const shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+        window.open(shareUrl, '_blank');
+    }
+
     // Event Listeners
     getMemesButton.addEventListener('click', async () => {
         const memeUrls = await fetchTrumpMemes();
@@ -233,10 +246,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     previewButton.addEventListener('click', previewMeme);
     downloadButton.addEventListener('click', downloadMeme);
+    document.getElementById('share-twitter').addEventListener('click', shareOnTwitter);
 
     // Input validation
     memeTextInput.addEventListener('input', (e) => {
-        if (e.target.value.length > 12) {
+        if (e.target.value.length > 25) {
             textError.style.display = 'block';
         } else {
             textError.style.display = 'none';

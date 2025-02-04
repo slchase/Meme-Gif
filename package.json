@@ -1,0 +1,16 @@
+{
+    "name": "trump-meme-generator",
+    "version": "1.0.0",
+    "description": "A fun Trump meme generator web application",
+    "main": "index.html",
+    "scripts": {
+      "start": "npx http-server .",
+      "test": "echo \"No tests specified\" && exit 0"
+    },
+    "keywords": ["meme", "generator", "trump", "gif"],
+    "author": "Simons Chase",
+    "license": "ISC",
+    "devDependencies": {
+      "http-server": "^14.1.1"
+    }
+  }

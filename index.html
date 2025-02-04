@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trump Meme Generator</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;600&display=swap" rel="stylesheet">
-    <script src="libgif.js"></script>
     <script src="gif.js"></script>
+    <script src="gif.worker.js"></script>
+    <script src="libgif.js"></script>
     <style>
         body {
             font-family: 'Lexend Deca', sans-serif;
@@ -175,6 +176,74 @@
             margin: 0 0 20px 0;
             color: #333;
         }
+        /* Mobile and Share Button Styles */
+        @media screen and (max-width: 768px) {
+            #main-container {
+                padding: 10px;
+            }
+
+            .meme-option {
+                width: 150px;
+            }
+
+            #selected-meme-display, #preview-display {
+                width: 200px;
+            }
+
+            button {
+                padding: 12px 20px;
+                font-size: 16px;
+            }
+
+            .control-row {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            select, input {
+                width: 100%;
+                max-width: none;
+            }
+
+            .share-buttons {
+                margin-top: 15px;
+            }
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .share-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            background-color: #1DA1F2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+
+        .share-button:hover {
+            background-color: #1991da;
+        }
+
+        .meme-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 400px;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -197,8 +266,13 @@
             <img id="selected-meme-display" src="" alt="Selected meme">
             
             <div class="text-controls">
-                <input type="text" id="meme-text" placeholder="Add text to meme (12 chars max)" maxlength="12">
-                <div class="error-message" id="text-error">Text cannot exceed 12 characters</div>
+                <input type="text" id="meme-text" placeholder="Add text to meme (25 chars max)" maxlength="25">
+                <div class="error-message" id="text-error">Text cannot exceed 25 characters</div>
+                <div class="meme-controls">
+                    <div class="share-buttons" style="display: none;">
+                        <button id="share-twitter" class="share-button">Share on X/Twitter</button>
+                    </div>
+                </div>
                 
                 <div class="control-row">
                     <select id="font-size">
@@ -209,6 +283,7 @@
                     <select id="text-position">
                         <option value="top">Top</option>
                         <option value="middle">Middle</option>
+                        <option value="bottom">Bottom</option>
                         <option value="left">Left</option>
                         <option value="right">Right</option>
                     </select>
@@ -224,7 +299,12 @@
                     <button id="start-over-2" class="reset-button">Start Over</button>
                 </div>
                 <img id="preview-display" src="" alt="Meme preview">
-                <button id="download-meme">Download Meme</button>
+                <div class="share-buttons">
+                    <button id="download-meme">Download Meme</button>
+                    <button id="share-twitter" class="share-button">
+                        Share on X
+                    </button>
+                </div>
             </div>
             <canvas id="meme-canvas" style="display: none;"></canvas>
         </div>
