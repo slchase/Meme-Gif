@@ -41,6 +41,13 @@
             border-radius: 5px;
             cursor: pointer;
             font-family: 'Lexend Deca', sans-serif;
+            margin: 5px;
+        }
+
+        .reset-button {
+            background-color: #666;
+            padding: 10px 15px;
+            font-size: 16px;
         }
 
         button:hover {
@@ -50,6 +57,10 @@
         button:disabled {
             background-color: #cccccc;
             cursor: not-allowed;
+        }
+
+        .reset-button:hover {
+            background-color: #888;
         }
 
         #meme-gallery {
@@ -110,40 +121,108 @@
             margin: 20px 0;
         }
 
-        h2 {
-            margin: 0 0 20px 0;
-            color: #333;
+        .text-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+            width: 100%;
+            max-width: 400px;
         }
 
-        #meme-text {
+        .control-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        select, input {
             padding: 10px;
-            margin: 10px;
-            width: 300px;
-            font-family: 'Lexend Deca', sans-serif;
             border: 2px solid #ccc;
             border-radius: 5px;
+            font-family: 'Lexend Deca', sans-serif;
             font-size: 16px;
         }
 
-        #meme-text:focus {
-            border-color: orange;
-            outline: none;
+        select {
+            cursor: pointer;
+            background-color: white;
+        }
+
+        #meme-text {
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .phase-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin: 0 0 20px 0;
+            color: #333;
         }
     </style>
 </head>
 <body>
     <div id="main-container">
         <h1>Trump Meme Generator</h1>
-        <button id="get-memes">Get Memes</button>
-        <p id="selection-text" class="selection-text">Select A Meme</p>
-        <div id="meme-gallery"></div>
+        
+        <!-- Phase 1: Select Meme -->
+        <div class="phase-container">
+            <button id="get-memes">Get Memes</button>
+            <p id="selection-text" class="selection-text">Select A Meme</p>
+            <div id="meme-gallery"></div>
+        </div>
+
+        <!-- Phase 2: Customize Meme -->
         <div id="selected-meme-container">
-            <h2>Selected Meme</h2>
+            <div class="control-row">
+                <h2>Selected Meme</h2>
+                <button id="start-over-1" class="reset-button">Start Over</button>
+            </div>
             <img id="selected-meme-display" src="" alt="Selected meme">
-            <input type="text" id="meme-text" placeholder="Add text to meme">
+            
+            <div class="text-controls">
+                <input type="text" id="meme-text" placeholder="Add text to meme (12 chars max)" maxlength="12">
+                <div class="error-message" id="text-error">Text cannot exceed 12 characters</div>
+                
+                <div class="control-row">
+                    <select id="font-size">
+                        <option value="small">Small Text</option>
+                        <option value="medium" selected>Medium Text</option>
+                        <option value="large">Large Text</option>
+                    </select>
+                    <select id="text-position">
+                        <option value="top">Top</option>
+                        <option value="middle">Middle</option>
+                        <option value="left">Left</option>
+                        <option value="right">Right</option>
+                    </select>
+                </div>
+            </div>
+            
             <button id="preview-meme">Preview Meme</button>
+
+            <!-- Phase 3: Preview & Download -->
             <div id="preview-container">
-                <h3>Preview</h3>
+                <div class="control-row">
+                    <h3>Preview</h3>
+                    <button id="start-over-2" class="reset-button">Start Over</button>
+                </div>
                 <img id="preview-display" src="" alt="Meme preview">
                 <button id="download-meme">Download Meme</button>
             </div>

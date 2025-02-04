@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // DOM Elements
     const getMemesButton = document.getElementById('get-memes');
     const memeGallery = document.getElementById('meme-gallery');
     const previewButton = document.getElementById('preview-meme');
@@ -8,13 +9,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewContainer = document.getElementById('preview-container');
     const previewDisplay = document.getElementById('preview-display');
     const selectionText = document.getElementById('selection-text');
+    const startOver1Button = document.getElementById('start-over-1');
+    const startOver2Button = document.getElementById('start-over-2');
+    const memeTextInput = document.getElementById('meme-text');
+    const textError = document.getElementById('text-error');
     let selectedMemeUrl = '';
     let previewMemeBlob = null;
 
+    const fontSizes = {
+        small: '20px',
+        medium: '30px',
+        large: '40px'
+    };
+
+    function resetTool() {
+        selectedMemeUrl = '';
+        previewMemeBlob = null;
+        memeGallery.innerHTML = '';
+        selectedMemeContainer.style.display = 'none';
+        previewContainer.style.display = 'none';
+        selectionText.style.display = 'none';
+        memeTextInput.value = '';
+        textError.style.display = 'none';
+        document.getElementById('font-size').value = 'medium';
+        document.getElementById('text-position').value = 'top';
+        getMemesButton.style.display = 'block';
+    }
+
     async function fetchTrumpMemes() {
         const apiKey = 'VNlj7YBvdmY8SoGZKt6OBex2XDUUDkJk';
+        const maxOffset = 100; // Maximum offset for variety
+        const randomOffset = Math.floor(Math.random() * maxOffset);
+        
         try {
-            const response = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=trump&limit=6`);
+            const response = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=trump&limit=6&offset=${randomOffset}`);
             if (!response.ok) throw new Error('Failed to fetch memes');
             const data = await response.json();
             return data.data.map(meme => meme.images.original.url);
@@ -48,9 +76,31 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedMemeDisplay.src = url;
         selectedMemeContainer.style.display = 'flex';
         previewContainer.style.display = 'none';
+        
+        // Hide other memes and initial button
+        memeGallery.innerHTML = '';
+        selectionText.style.display = 'none';
+        getMemesButton.style.display = 'none';
     }
 
-    async function createMemeWithText(gifUrl, text) {
+    function getTextPosition(canvas, position) {
+        const textY = {
+            top: 40,
+            middle: canvas.height / 2,
+            bottom: canvas.height - 40
+        };
+
+        const textX = {
+            left: canvas.width / 4,
+            right: (canvas.width / 4) * 3,
+            top: canvas.width / 2,
+            middle: canvas.width / 2
+        };
+
+        return { x: textX[position], y: textY[position] || textY.top };
+    }
+
+    async function createMemeWithText(gifUrl, text, fontSize, position) {
         const canvas = document.getElementById('meme-canvas');
         const ctx = canvas.getContext('2d');
         const gif = new GIF({
@@ -60,7 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         try {
-            // Create a SuperGif instance
             const img = document.createElement('img');
             img.src = gifUrl;
             
@@ -73,40 +122,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 gifImg.load(() => {
                     try {
                         const numFrames = gifImg.get_length();
-                        console.log(`Processing ${numFrames} frames`);
-                        
-                        // Set canvas dimensions
                         canvas.width = gifImg.get_canvas().width;
                         canvas.height = gifImg.get_canvas().height;
 
-                        // Process each frame
                         for (let i = 0; i < numFrames; i++) {
                             gifImg.move_to(i);
-                            
-                            // Draw the current frame
                             ctx.drawImage(gifImg.get_canvas(), 0, 0);
                             
-                            // Add text
                             if (text) {
                                 ctx.fillStyle = 'white';
                                 ctx.strokeStyle = 'black';
                                 ctx.lineWidth = 3;
-                                ctx.font = '30px Impact';
+                                ctx.font = `${fontSizes[fontSize]} Impact`;
                                 ctx.textAlign = 'center';
                                 
-                                // Position text at top
-                                ctx.strokeText(text, canvas.width / 2, 40);
-                                ctx.fillText(text, canvas.width / 2, 40);
+                                const { x, y } = getTextPosition(canvas, position);
+                                ctx.strokeText(text, x, y);
+                                ctx.fillText(text, x, y);
                             }
 
-                            // Add frame to new GIF
                             gif.addFrame(canvas, { 
                                 copy: true, 
                                 delay: 100 
                             });
                         }
 
-                        // Render the final GIF
                         gif.on('finished', (blob) => {
                             resolve(blob);
                         });
@@ -128,9 +168,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        const text = document.getElementById('meme-text').value;
-        if (!text.trim()) {
+        const text = memeTextInput.value.trim();
+        if (!text) {
             alert('Please add some text to preview!');
+            return;
+        }
+
+        if (text.length > 12) {
+            textError.style.display = 'block';
             return;
         }
 
@@ -138,7 +183,10 @@ document.addEventListener('DOMContentLoaded', () => {
             previewButton.disabled = true;
             previewButton.textContent = 'Creating Preview...';
             
-            previewMemeBlob = await createMemeWithText(selectedMemeUrl, text);
+            const fontSize = document.getElementById('font-size').value;
+            const position = document.getElementById('text-position').value;
+            
+            previewMemeBlob = await createMemeWithText(selectedMemeUrl, text, fontSize, position);
             const url = URL.createObjectURL(previewMemeBlob);
             previewDisplay.src = url;
             previewContainer.style.display = 'flex';
@@ -174,13 +222,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Event Listeners
     getMemesButton.addEventListener('click', async () => {
         const memeUrls = await fetchTrumpMemes();
         displayMemeOptions(memeUrls);
-        selectedMemeContainer.style.display = 'none';
-        previewContainer.style.display = 'none';
     });
 
+    startOver1Button.addEventListener('click', resetTool);
+    startOver2Button.addEventListener('click', resetTool);
+    
     previewButton.addEventListener('click', previewMeme);
     downloadButton.addEventListener('click', downloadMeme);
+
+    // Input validation
+    memeTextInput.addEventListener('input', (e) => {
+        if (e.target.value.length > 12) {
+            textError.style.display = 'block';
+        } else {
+            textError.style.display = 'none';
+        }
+    });
 });
